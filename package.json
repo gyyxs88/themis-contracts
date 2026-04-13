@@ -1,0 +1,32 @@
+{
+  "name": "themis-contracts",
+  "version": "0.1.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./managed-agent-platform-access": "./dist/managed-agent-platform-access.js",
+    "./managed-agent-platform-worker": "./dist/managed-agent-platform-worker.js",
+    "./managed-agent-platform-projects": "./dist/managed-agent-platform-projects.js",
+    "./managed-agent-platform-work-items": "./dist/managed-agent-platform-work-items.js",
+    "./managed-agent-platform-collaboration": "./dist/managed-agent-platform-collaboration.js",
+    "./managed-agent-platform-agents": "./dist/managed-agent-platform-agents.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node --test --import tsx src/**/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
