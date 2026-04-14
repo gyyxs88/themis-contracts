@@ -222,12 +222,28 @@ export interface ManagedAgentPlatformHandoffRecord extends TimestampedRecord {
   fromAgentId?: string | null;
   toAgentId?: string | null;
   workItemId?: string | null;
+  sourceMessageId?: string | null;
+  sourceRunId?: string | null;
+  summary?: string;
+  blockers?: string[];
+  recommendedNextActions?: string[];
+  attachedArtifacts?: string[];
+  payload?: unknown;
+  fromAgentDisplayName?: string;
+  toAgentDisplayName?: string;
+  counterpartyDisplayName?: string;
 }
 
 export interface ManagedAgentPlatformTimelineEntry extends TimestampedRecord {
   entryId: string;
   kind: string;
+  title?: string;
   summary: string;
+  workItemId?: string | null;
+  handoffId?: string | null;
+  messageId?: string | null;
+  counterpartyAgentId?: string | null;
+  counterpartyDisplayName?: string;
 }
 
 export interface ManagedAgentPlatformHandoffListView {

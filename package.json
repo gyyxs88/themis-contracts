@@ -13,7 +13,8 @@
     "./managed-agent-platform-projects": "./dist/managed-agent-platform-projects.js",
     "./managed-agent-platform-work-items": "./dist/managed-agent-platform-work-items.js",
     "./managed-agent-platform-collaboration": "./dist/managed-agent-platform-collaboration.js",
-    "./managed-agent-platform-agents": "./dist/managed-agent-platform-agents.js"
+    "./managed-agent-platform-agents": "./dist/managed-agent-platform-agents.js",
+    "./managed-agent-platform-shared": "./dist/managed-agent-platform-shared.js"
   },
   "files": [
     "dist",
