@@ -86,7 +86,7 @@ export interface ManagedAgentPlatformProjectWorkspaceBindingRecord extends Times
   continuityMode: ProjectWorkspaceContinuityMode;
 }
 
-export interface ManagedAgentPlatformExecutionLeaseContext extends TimestampedRecord {
+export interface ManagedAgentPlatformExecutionLeaseRecord extends TimestampedRecord {
   leaseId: string;
   runId: string;
   nodeId: string;
@@ -96,8 +96,11 @@ export interface ManagedAgentPlatformExecutionLeaseContext extends TimestampedRe
 }
 
 export interface ManagedAgentPlatformNodeLeaseSummary {
-  activeLeaseCount: number;
-  activeRunCount: number;
+  totalCount: number;
+  activeCount: number;
+  expiredCount: number;
+  releasedCount: number;
+  revokedCount: number;
 }
 
 export interface ManagedAgentPlatformNodeRecord extends TimestampedRecord {
@@ -124,26 +127,35 @@ export interface ManagedAgentPlatformNodeDetailResult {
   organization: ManagedAgentPlatformOrganizationRecord;
   node: ManagedAgentPlatformNodeRecord;
   leaseSummary: ManagedAgentPlatformNodeLeaseSummary;
-  leases: ManagedAgentPlatformExecutionLeaseContext[];
+  activeExecutionLeases: ManagedAgentPlatformNodeExecutionLeaseContext[];
+  recentExecutionLeases: ManagedAgentPlatformNodeExecutionLeaseContext[];
 }
 
-export interface ManagedAgentPlatformReclaimedLeaseContext extends TimestampedRecord {
-  leaseId: string;
-  runId: string;
-  workItemId: string;
+export interface ManagedAgentPlatformNodeExecutionLeaseContext {
+  lease: ManagedAgentPlatformExecutionLeaseRecord;
+  run: ManagedAgentPlatformRunRecord | null;
+  workItem: ManagedAgentPlatformWorkItemRecord | null;
+  targetAgent: ManagedAgentPlatformAgentRecord | null;
 }
 
 export interface ManagedAgentPlatformNodeLeaseRecoverySummary {
-  reclaimedCount: number;
-  failureCount: number;
+  activeLeaseCount: number;
+  reclaimedRunCount: number;
+  requeuedWorkItemCount: number;
 }
 
 export type ManagedAgentPlatformNodeLeaseRecoveryAction = "reclaim" | "offline" | "drain";
 
+export interface ManagedAgentPlatformReclaimedLeaseContext {
+  lease: ManagedAgentPlatformExecutionLeaseRecord;
+  run: ManagedAgentPlatformRunRecord | null;
+  workItem: ManagedAgentPlatformWorkItemRecord | null;
+  recoveryAction?: string;
+}
+
 export interface ManagedAgentPlatformNodeLeaseRecoveryResult {
   organization: ManagedAgentPlatformOrganizationRecord;
   node: ManagedAgentPlatformNodeRecord;
-  action: ManagedAgentPlatformNodeLeaseRecoveryAction;
   summary: ManagedAgentPlatformNodeLeaseRecoverySummary;
   reclaimedLeases: ManagedAgentPlatformReclaimedLeaseContext[];
 }
@@ -245,7 +257,7 @@ export interface ManagedAgentPlatformWorkerAssignedRun {
   targetAgent: ManagedAgentPlatformAgentRecord;
   workItem: ManagedAgentPlatformWorkItemRecord;
   run: ManagedAgentPlatformRunRecord;
-  executionLease: ManagedAgentPlatformExecutionLeaseContext;
+  executionLease: ManagedAgentPlatformExecutionLeaseRecord;
   executionContract: {
     workspacePath?: string | null;
     credentialId?: string | null;

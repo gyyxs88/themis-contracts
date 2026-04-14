@@ -1,7 +1,9 @@
 import type {
   ManagedAgentNodeStatus,
+  ManagedAgentPlatformExecutionLeaseRecord,
   ManagedAgentPlatformExecutionBoundaryView,
   ManagedAgentPlatformNodeDetailResult,
+  ManagedAgentPlatformNodeExecutionLeaseContext,
   ManagedAgentPlatformNodeLeaseRecoveryAction,
   ManagedAgentPlatformNodeLeaseRecoveryResult,
   ManagedAgentPlatformNodeLeaseRecoverySummary,
@@ -110,8 +112,8 @@ export interface ManagedAgentPlatformWorkerRunCompletePayload
 export type ManagedAgentPlatformWorkerOrganizationRecord = ManagedAgentPlatformOrganizationRecord;
 export type ManagedAgentPlatformWorkerNodeRecord = ManagedAgentPlatformNodeRecord;
 export type ManagedAgentPlatformWorkerNodeLeaseSummary = ManagedAgentPlatformNodeLeaseSummary;
-export type ManagedAgentPlatformWorkerNodeExecutionLeaseContext =
-  ManagedAgentPlatformNodeDetailResult["leases"][number];
+export type ManagedAgentPlatformWorkerExecutionLeaseRecord = ManagedAgentPlatformExecutionLeaseRecord;
+export type ManagedAgentPlatformWorkerNodeExecutionLeaseContext = ManagedAgentPlatformNodeExecutionLeaseContext;
 export type ManagedAgentPlatformWorkerNodeLeaseRecoveryAction = ManagedAgentPlatformNodeLeaseRecoveryAction;
 export type ManagedAgentPlatformWorkerReclaimedLeaseContext = ManagedAgentPlatformReclaimedLeaseContext;
 export type ManagedAgentPlatformWorkerNodeLeaseRecoverySummary = ManagedAgentPlatformNodeLeaseRecoverySummary;
