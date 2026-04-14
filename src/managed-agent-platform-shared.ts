@@ -16,8 +16,24 @@ export type ManagedAgentWorkItemStatus =
   | "cancelled";
 export type ManagedAgentLifecycleStatus = "active" | "paused" | "archived";
 export type ManagedAgentMailboxStatus = "pending" | "acked" | "responded" | "closed";
-export type ManagedAgentRunStatus = ManagedAgentWorkItemStatus;
-export type ManagedAgentWorkerRunStatus = "starting" | "running" | "waiting_action" | "completed" | "failed";
+export type ManagedAgentRunStatus =
+  | "created"
+  | "starting"
+  | "running"
+  | "waiting_action"
+  | "interrupted"
+  | "completed"
+  | "failed"
+  | "cancelled";
+export type ManagedAgentExecutionLeaseStatus = "active" | "expired" | "released" | "revoked";
+export type ManagedAgentWorkerRunStatus =
+  | "starting"
+  | "running"
+  | "heartbeat"
+  | "waiting_human"
+  | "waiting_agent"
+  | "failed"
+  | "cancelled";
 export type ProjectWorkspaceContinuityMode = "sticky" | "replicated";
 export type ManagedAgentIdleRecoveryAction = "pause";
 
@@ -92,7 +108,8 @@ export interface ManagedAgentPlatformExecutionLeaseRecord extends TimestampedRec
   nodeId: string;
   workItemId: string;
   leaseToken?: string;
-  status?: ManagedAgentRunStatus;
+  targetAgentId?: string;
+  status?: ManagedAgentExecutionLeaseStatus;
 }
 
 export interface ManagedAgentPlatformNodeLeaseSummary {
@@ -233,22 +250,31 @@ export interface ManagedAgentPlatformMailboxRespondResult {
 }
 
 export interface ManagedAgentPlatformWorkerWaitingActionPayload {
-  waitingFor: ManagedAgentWaitingFor;
-  summary?: string;
-  inputText?: string;
-  payload?: unknown;
+  actionType?: string;
+  actionId?: string;
+  prompt?: string;
+  message?: string;
+  choices?: unknown;
+  inputSchema?: unknown;
+  requestId?: string;
+  taskId?: string;
 }
 
 export interface ManagedAgentPlatformWorkerCompletionPayload {
-  summary?: string;
-  outputText?: string;
-  artifactRefs?: string[];
+  summary: string;
+  output?: unknown;
+  touchedFiles?: string[];
+  structuredOutput?: Record<string, unknown> | null;
+  completedAt?: string;
 }
 
 export interface ManagedAgentPlatformWorkerRunMutationResult {
   organization: ManagedAgentPlatformOrganizationRecord;
   node: ManagedAgentPlatformNodeRecord;
+  targetAgent: ManagedAgentPlatformAgentRecord;
+  workItem: ManagedAgentPlatformWorkItemRecord;
   run: ManagedAgentPlatformRunRecord;
+  executionLease: ManagedAgentPlatformExecutionLeaseRecord;
 }
 
 export interface ManagedAgentPlatformWorkerAssignedRun {
