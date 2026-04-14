@@ -15,7 +15,7 @@ export type ManagedAgentWorkItemStatus =
   | "failed"
   | "cancelled";
 export type ManagedAgentLifecycleStatus = "active" | "paused" | "archived";
-export type ManagedAgentMailboxStatus = "pending" | "acked" | "responded" | "closed";
+export type ManagedAgentMailboxStatus = "pending" | "leased" | "acked" | "responded" | "closed";
 export type ManagedAgentRunStatus =
   | "created"
   | "starting"
@@ -201,20 +201,44 @@ export interface ManagedAgentPlatformRunRecord extends TimestampedRecord {
 export interface ManagedAgentPlatformMessageRecord extends TimestampedRecord {
   messageId: string;
   organizationId: string;
+  fromAgentId?: string | null;
+  toAgentId?: string | null;
+  workItemId?: string | null;
+  runId?: string | null;
+  parentMessageId?: string | null;
   mailboxEntryId?: string | null;
+  messageType?: string;
+  payload?: unknown;
+  artifactRefs?: string[];
+  priority?: ManagedAgentPriority;
+  requiresAck?: boolean;
   direction?: "inbound" | "outbound";
 }
 
 export interface ManagedAgentPlatformMailboxEntryRecord extends TimestampedRecord {
   mailboxEntryId: string;
   organizationId: string;
-  agentId: string;
+  ownerAgentId: string;
+  agentId?: string;
+  messageId?: string | null;
+  workItemId?: string | null;
+  priority?: ManagedAgentPriority;
   status: ManagedAgentMailboxStatus;
+  requiresAck?: boolean;
+  availableAt?: string;
+  leaseToken?: string | null;
+  leasedAt?: string | null;
+  ackedAt?: string | null;
+}
+
+export interface ManagedAgentPlatformMailboxItem {
+  entry: ManagedAgentPlatformMailboxEntryRecord;
+  message: ManagedAgentPlatformMessageRecord;
 }
 
 export interface ManagedAgentPlatformMailboxListView {
   agent: ManagedAgentPlatformAgentRecord;
-  items: ManagedAgentPlatformMailboxEntryRecord[];
+  items: ManagedAgentPlatformMailboxItem[];
 }
 
 export interface ManagedAgentPlatformHandoffRecord extends TimestampedRecord {
@@ -254,15 +278,18 @@ export interface ManagedAgentPlatformHandoffListView {
 
 export interface ManagedAgentPlatformMailboxPullResult {
   agent: ManagedAgentPlatformAgentRecord;
-  mailboxEntry: ManagedAgentPlatformMailboxEntryRecord;
-  message?: ManagedAgentPlatformMessageRecord;
+  item: ManagedAgentPlatformMailboxItem | null;
 }
 
 export interface ManagedAgentPlatformMailboxRespondResult {
+  organization: ManagedAgentPlatformOrganizationRecord;
   agent: ManagedAgentPlatformAgentRecord;
-  mailboxEntry: ManagedAgentPlatformMailboxEntryRecord;
-  message?: ManagedAgentPlatformMessageRecord;
-  workItem?: ManagedAgentPlatformWorkItemRecord;
+  sourceMailboxEntry: ManagedAgentPlatformMailboxEntryRecord;
+  sourceMessage: ManagedAgentPlatformMessageRecord;
+  responseMessage: ManagedAgentPlatformMessageRecord;
+  responseMailboxEntry: ManagedAgentPlatformMailboxEntryRecord;
+  resumedWorkItem?: ManagedAgentPlatformWorkItemRecord;
+  resumedRuns: ManagedAgentPlatformRunRecord[];
 }
 
 export interface ManagedAgentPlatformWorkerWaitingActionPayload {
