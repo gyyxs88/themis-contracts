@@ -125,6 +125,7 @@ export interface ManagedAgentPlatformNodeRecord extends TimestampedRecord {
   organizationId: string;
   displayName: string;
   status: ManagedAgentNodeStatus;
+  nodeIp?: string | null;
   slotCapacity: number;
   slotAvailable: number;
   labels?: string[];
