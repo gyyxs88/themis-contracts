@@ -56,6 +56,31 @@ export interface ManagedAgentPlatformPrincipalRecord extends TimestampedRecord {
   displayName: string;
 }
 
+export interface ManagedAgentPlatformAgentCardReportLine {
+  supervisorPrincipalId?: string;
+  supervisorAgentId?: string;
+  supervisorDisplayName?: string;
+}
+
+export interface ManagedAgentPlatformAgentCardRecord {
+  employeeCode: string;
+  title: string;
+  reportLine?: ManagedAgentPlatformAgentCardReportLine;
+  domainTags: string[];
+  skillTags: string[];
+  responsibilitySummary: string;
+  allowedScopes: string[];
+  forbiddenScopes: string[];
+  workStyle?: string;
+  collaborationNotes?: string;
+  representativeProjects: string[];
+  currentFocus?: string;
+  reviewSummary?: string;
+  lastReviewedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface ManagedAgentPlatformAgentRecord extends TimestampedRecord {
   agentId: string;
   organizationId: string;
@@ -65,6 +90,7 @@ export interface ManagedAgentPlatformAgentRecord extends TimestampedRecord {
   mission?: string;
   status: ManagedAgentLifecycleStatus;
   supervisorAgentId?: string | null;
+  agentCard?: ManagedAgentPlatformAgentCardRecord;
 }
 
 export interface ManagedAgentPlatformWorkspacePolicyRecord extends TimestampedRecord {
