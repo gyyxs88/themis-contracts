@@ -511,3 +511,92 @@ export interface ManagedAgentPlatformApproveSpawnSuggestionResult {
 export interface ManagedAgentPlatformSpawnSuggestionDecisionResult {
   auditLog: ManagedAgentPlatformSpawnSuggestionAuditRecord;
 }
+
+export type ManagedAgentMeetingRoomStatus = "open" | "closing" | "closed";
+export type ManagedAgentMeetingDiscussionMode = "moderated" | "collaborative";
+export type ManagedAgentMeetingParticipantKind = "themis" | "managed_agent";
+export type ManagedAgentMeetingRoomRole = "host" | "participant";
+export type ManagedAgentMeetingEntryMode = "blank" | "active_work_context" | "selected_context";
+export type ManagedAgentMeetingRoundStatus = "queued" | "running" | "completed" | "failed";
+export type ManagedAgentMeetingMessageAudience = "all_participants" | "themis_only" | "selected_participants";
+export type ManagedAgentMeetingMessageKind = "message" | "status" | "summary" | "error";
+export type ManagedAgentMeetingResolutionStatus = "draft" | "accepted" | "promoted";
+export type ManagedAgentMeetingArtifactRefType =
+  | "work_item"
+  | "handoff"
+  | "managed_agent_timeline"
+  | "conversation_summary"
+  | "document";
+
+export interface ManagedAgentPlatformMeetingRoomRecord extends TimestampedRecord {
+  roomId: string;
+  ownerPrincipalId: string;
+  organizationId: string;
+  title: string;
+  goal: string;
+  status: ManagedAgentMeetingRoomStatus;
+  discussionMode: ManagedAgentMeetingDiscussionMode;
+  createdByOperatorPrincipalId: string;
+  closedAt?: string | null;
+  closingSummary?: string;
+}
+
+export interface ManagedAgentPlatformMeetingParticipantRecord extends TimestampedRecord {
+  participantId: string;
+  roomId: string;
+  participantKind: ManagedAgentMeetingParticipantKind;
+  principalId: string;
+  agentId?: string | null;
+  displayName: string;
+  roomRole: ManagedAgentMeetingRoomRole;
+  entryMode: ManagedAgentMeetingEntryMode;
+  entryContextSnapshotJson?: unknown;
+  roomSessionId?: string | null;
+  joinedAt: string;
+  leftAt?: string | null;
+}
+
+export interface ManagedAgentPlatformMeetingRoundRecord extends TimestampedRecord {
+  roundId: string;
+  roomId: string;
+  triggerMessageId: string;
+  status: ManagedAgentMeetingRoundStatus;
+  targetParticipantIds: string[];
+  respondedParticipantIds: string[];
+  startedAt?: string | null;
+  completedAt?: string | null;
+  failureMessage?: string | null;
+}
+
+export interface ManagedAgentPlatformMeetingMessageRecord extends TimestampedRecord {
+  messageId: string;
+  roomId: string;
+  roundId?: string | null;
+  speakerType: "themis" | "managed_agent" | "system";
+  speakerPrincipalId?: string | null;
+  speakerAgentId?: string | null;
+  operatorPrincipalId?: string | null;
+  audience: ManagedAgentMeetingMessageAudience;
+  visibleParticipantIds?: string[];
+  content: string;
+  messageKind: ManagedAgentMeetingMessageKind;
+}
+
+export interface ManagedAgentPlatformMeetingResolutionRecord extends TimestampedRecord {
+  resolutionId: string;
+  roomId: string;
+  sourceMessageIds: string[];
+  title: string;
+  summary: string;
+  status: ManagedAgentMeetingResolutionStatus;
+  promotedWorkItemId?: string | null;
+}
+
+export interface ManagedAgentPlatformMeetingArtifactRefRecord extends TimestampedRecord {
+  artifactRefId: string;
+  roomId: string;
+  participantId?: string | null;
+  refType: ManagedAgentMeetingArtifactRefType;
+  refId: string;
+  snapshotJson?: unknown;
+}

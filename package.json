@@ -15,6 +15,7 @@
     "./managed-agent-platform-collaboration": "./dist/managed-agent-platform-collaboration.js",
     "./managed-agent-platform-agents": "./dist/managed-agent-platform-agents.js",
     "./managed-agent-platform-oncall": "./dist/managed-agent-platform-oncall.js",
+    "./managed-agent-platform-meetings": "./dist/managed-agent-platform-meetings.js",
     "./managed-agent-platform-shared": "./dist/managed-agent-platform-shared.js"
   },
   "files": [
