@@ -154,6 +154,9 @@ export type ManagedAgentPlatformMeetingRoomStreamEvent =
       messageId: string;
       roundId: string;
     })
+  | ({ event: "room.round.queued" } & ManagedAgentPlatformMeetingRoomStreamEventBase & {
+      roundId: string;
+    })
   | ({ event: "room.round.started" } & ManagedAgentPlatformMeetingRoomStreamEventBase & {
       roundId: string;
       participantAgentId: string;
@@ -162,6 +165,8 @@ export type ManagedAgentPlatformMeetingRoomStreamEvent =
       roundId: string;
       participantAgentId: string;
       messageId: string;
+      content: string;
+      audience: ManagedAgentPlatformMeetingMessageRecord["audience"];
     })
   | ({ event: "room.agent.failed" } & ManagedAgentPlatformMeetingRoomStreamEventBase & {
       roundId: string;
