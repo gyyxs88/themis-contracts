@@ -7,7 +7,7 @@ import {
 } from "./managed-agent-platform-meetings.js";
 
 test("meeting room 契约会暴露稳定状态枚举和 stream event helper", () => {
-  assert.deepEqual(MANAGED_AGENT_MEETING_ROOM_STATUSES, ["open", "closing", "closed"]);
+  assert.deepEqual(MANAGED_AGENT_MEETING_ROOM_STATUSES, ["open", "closing", "closed", "terminated"]);
   assert.deepEqual(MANAGED_AGENT_MEETING_ROUND_STATUSES, ["queued", "running", "completed", "failed"]);
   assert.deepEqual(
     buildManagedAgentMeetingRoomStreamEvent("room.round.completed", {

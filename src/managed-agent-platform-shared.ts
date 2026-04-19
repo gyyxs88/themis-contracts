@@ -512,7 +512,7 @@ export interface ManagedAgentPlatformSpawnSuggestionDecisionResult {
   auditLog: ManagedAgentPlatformSpawnSuggestionAuditRecord;
 }
 
-export type ManagedAgentMeetingRoomStatus = "open" | "closing" | "closed";
+export type ManagedAgentMeetingRoomStatus = "open" | "closing" | "closed" | "terminated";
 export type ManagedAgentMeetingDiscussionMode = "moderated" | "collaborative";
 export type ManagedAgentMeetingParticipantKind = "themis" | "managed_agent";
 export type ManagedAgentMeetingRoomRole = "host" | "participant";
@@ -539,6 +539,9 @@ export interface ManagedAgentPlatformMeetingRoomRecord extends TimestampedRecord
   createdByOperatorPrincipalId: string;
   closedAt?: string | null;
   closingSummary?: string;
+  terminatedAt?: string | null;
+  terminatedByOperatorPrincipalId?: string | null;
+  terminationReason?: string;
 }
 
 export interface ManagedAgentPlatformMeetingParticipantRecord extends TimestampedRecord {

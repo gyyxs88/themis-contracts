@@ -10,7 +10,7 @@ import type {
 } from "./managed-agent-platform-shared.js";
 import type { ManagedAgentPlatformOwnerPayload } from "./managed-agent-platform-worker.js";
 
-export const MANAGED_AGENT_MEETING_ROOM_STATUSES = ["open", "closing", "closed"] as const;
+export const MANAGED_AGENT_MEETING_ROOM_STATUSES = ["open", "closing", "closed", "terminated"] as const;
 export const MANAGED_AGENT_MEETING_ROUND_STATUSES = ["queued", "running", "completed", "failed"] as const;
 
 export interface ManagedAgentPlatformMeetingRoomCreateInput {
@@ -72,6 +72,12 @@ export interface ManagedAgentPlatformMeetingRoomCloseInput {
   closingSummary: string;
 }
 
+export interface ManagedAgentPlatformMeetingRoomTerminateInput {
+  roomId: string;
+  operatorPrincipalId: string;
+  terminationReason: string;
+}
+
 export interface ManagedAgentPlatformMeetingRoomListPayload extends ManagedAgentPlatformOwnerPayload {
   status?: ManagedAgentPlatformMeetingRoomRecord["status"];
 }
@@ -113,6 +119,10 @@ export interface ManagedAgentPlatformMeetingRoomClosePayload extends ManagedAgen
   room: ManagedAgentPlatformMeetingRoomCloseInput;
 }
 
+export interface ManagedAgentPlatformMeetingRoomTerminatePayload extends ManagedAgentPlatformOwnerPayload {
+  termination: ManagedAgentPlatformMeetingRoomTerminateInput;
+}
+
 export interface ManagedAgentPlatformMeetingRoomDetailResult {
   room: ManagedAgentPlatformMeetingRoomRecord;
   participants: ManagedAgentPlatformMeetingParticipantRecord[];
@@ -131,6 +141,7 @@ export type ManagedAgentPlatformMeetingRoomParticipantsAddResult = ManagedAgentP
 export type ManagedAgentPlatformMeetingRoomCreateResolutionResult = ManagedAgentPlatformMeetingRoomDetailResult;
 export type ManagedAgentPlatformMeetingRoomPromoteResolutionResult = ManagedAgentPlatformMeetingRoomDetailResult;
 export type ManagedAgentPlatformMeetingRoomCloseResult = ManagedAgentPlatformMeetingRoomDetailResult;
+export type ManagedAgentPlatformMeetingRoomTerminateResult = ManagedAgentPlatformMeetingRoomDetailResult;
 
 export interface ManagedAgentPlatformMeetingRoomMessageCreateResult {
   room: ManagedAgentPlatformMeetingRoomRecord;
