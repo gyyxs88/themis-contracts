@@ -382,6 +382,7 @@ export interface ManagedAgentPlatformWorkItemDetailView {
 
 export interface ManagedAgentPlatformDispatchWorkItemResult {
   organization: ManagedAgentPlatformOrganizationRecord;
+  targetAgent: ManagedAgentPlatformAgentRecord;
   workItem: ManagedAgentPlatformWorkItemRecord;
 }
 

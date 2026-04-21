@@ -55,6 +55,27 @@ export interface ManagedAgentPlatformAgentExecutionBoundaryUpdatePayload extends
   };
 }
 
+export interface ManagedAgentPlatformAgentCardUpdateInput {
+  employeeCode?: string;
+  title?: string;
+  domainTags?: string[];
+  skillTags?: string[];
+  responsibilitySummary?: string;
+  allowedScopes?: string[];
+  forbiddenScopes?: string[];
+  workStyle?: string;
+  collaborationNotes?: string;
+  representativeProjects?: string[];
+  currentFocus?: string;
+  reviewSummary?: string;
+  lastReviewedAt?: string | null;
+}
+
+export interface ManagedAgentPlatformAgentCardUpdatePayload extends ManagedAgentPlatformOwnerPayload {
+  agentId: string;
+  card: ManagedAgentPlatformAgentCardUpdateInput;
+}
+
 export interface ManagedAgentPlatformAgentSpawnPolicyUpdateInput {
   enabled: boolean;
   maxAgentsPerRole?: number | null;
@@ -130,6 +151,7 @@ export interface ManagedAgentPlatformCollaborationDashboardPayload
 export type ManagedAgentPlatformAgentListResult = ManagedAgentPlatformAgentListView;
 export type ManagedAgentPlatformAgentCreateResult = ManagedAgentPlatformCreateAgentResult;
 export type ManagedAgentPlatformAgentExecutionBoundaryUpdateResult = ManagedAgentPlatformExecutionBoundaryView;
+export type ManagedAgentPlatformAgentCardUpdateResult = ManagedAgentPlatformAgentDetailResult;
 export interface ManagedAgentPlatformAgentSpawnPolicyUpdateResult {
   policy: ManagedAgentPlatformSpawnPolicyRecord;
 }
