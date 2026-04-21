@@ -368,6 +368,7 @@ export interface ManagedAgentPlatformRunDetailView {
   run: ManagedAgentPlatformRunRecord;
   workItem: ManagedAgentPlatformWorkItemRecord;
   targetAgent: ManagedAgentPlatformAgentRecord;
+  completionResult?: ManagedAgentPlatformWorkerCompletionPayload | null;
 }
 
 export interface ManagedAgentPlatformWorkItemDetailView {
@@ -378,6 +379,7 @@ export interface ManagedAgentPlatformWorkItemDetailView {
   parentWorkItem?: ManagedAgentPlatformWorkItemRecord | null;
   childWorkItems?: ManagedAgentPlatformWorkItemRecord[];
   latestHandoff?: ManagedAgentPlatformHandoffRecord | null;
+  latestCompletion?: ManagedAgentPlatformWorkerCompletionPayload | null;
 }
 
 export interface ManagedAgentPlatformDispatchWorkItemResult {
