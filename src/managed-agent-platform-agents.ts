@@ -9,6 +9,7 @@ import type {
   ManagedAgentPlatformGovernanceOverview,
   ManagedAgentPlatformIdleRecoverySuggestionsView,
   ManagedAgentPlatformOwnerView,
+  ManagedAgentReasoningLevel,
   ManagedAgentPlatformSpawnPolicyRecord,
   ManagedAgentPlatformSpawnSuggestionDecisionResult,
   ManagedAgentPlatformSpawnSuggestionsView,
@@ -44,6 +45,7 @@ export interface ManagedAgentPlatformAgentExecutionBoundaryUpdateInput {
   runtimeProfile?: {
     provider?: string | null;
     model?: string | null;
+    reasoning?: ManagedAgentReasoningLevel | null;
   };
 }
 

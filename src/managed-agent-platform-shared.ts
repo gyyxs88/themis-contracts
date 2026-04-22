@@ -16,6 +16,7 @@ export type ManagedAgentWorkItemStatus =
   | "cancelled";
 export type ManagedAgentLifecycleStatus = "active" | "paused" | "archived";
 export type ManagedAgentMailboxStatus = "pending" | "leased" | "acked" | "responded" | "closed";
+export type ManagedAgentReasoningLevel = "minimal" | "low" | "medium" | "high" | "xhigh";
 export type ManagedAgentRunStatus =
   | "created"
   | "starting"
@@ -103,6 +104,7 @@ export interface ManagedAgentPlatformRuntimeProfileRecord extends TimestampedRec
   agentId: string;
   provider?: string | null;
   model?: string | null;
+  reasoning?: ManagedAgentReasoningLevel | null;
 }
 
 export interface ManagedAgentPlatformAuthAccountRecord extends TimestampedRecord {
