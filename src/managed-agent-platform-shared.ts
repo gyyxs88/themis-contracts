@@ -445,6 +445,10 @@ export interface ManagedAgentPlatformWorkerAssignedRun {
     credentialId?: string | null;
     provider?: string | null;
     model?: string | null;
+    reasoning?: string | null;
+    sandboxMode?: string | null;
+    approvalPolicy?: string | null;
+    networkAccessEnabled?: boolean | null;
     [key: string]: unknown;
   };
 }
