@@ -1,4 +1,5 @@
 import type {
+  ManagedAgentAttentionLevel,
   ManagedAgentIdleRecoveryAction,
   ManagedAgentPlatformAgentDetailView,
   ManagedAgentPlatformAgentListView,
@@ -39,13 +40,26 @@ export interface ManagedAgentPlatformAgentDetailPayload
 export interface ManagedAgentPlatformAgentExecutionBoundaryUpdateInput {
   agentId: string;
   workspacePolicy?: {
+    displayName?: string;
+    workspacePath?: string;
+    additionalDirectories?: string[];
+    allowNetworkAccess?: boolean;
     canonicalWorkspacePath?: string | null;
     additionalWorkspacePaths?: string[];
   };
   runtimeProfile?: {
+    displayName?: string;
     provider?: string | null;
     model?: string | null;
     reasoning?: ManagedAgentReasoningLevel | null;
+    memoryMode?: string;
+    sandboxMode?: string;
+    webSearchMode?: string;
+    networkAccessEnabled?: boolean;
+    approvalPolicy?: string;
+    accessMode?: string;
+    authAccountId?: string;
+    thirdPartyProviderId?: string;
   };
 }
 
@@ -79,7 +93,10 @@ export interface ManagedAgentPlatformAgentCardUpdatePayload extends ManagedAgent
 }
 
 export interface ManagedAgentPlatformAgentSpawnPolicyUpdateInput {
-  enabled: boolean;
+  enabled?: boolean;
+  organizationId?: string;
+  maxActiveAgents?: number;
+  maxActiveAgentsPerRole?: number;
   maxAgentsPerRole?: number | null;
 }
 
@@ -88,9 +105,12 @@ export interface ManagedAgentPlatformAgentSpawnPolicyUpdatePayload extends Manag
 }
 
 export interface ManagedAgentPlatformAgentSpawnApproveInput {
-  suggestionId: string;
+  suggestionId?: string;
+  departmentRole: string;
   displayName?: string;
   mission?: string;
+  organizationId?: string;
+  supervisorAgentId?: string;
 }
 
 export interface ManagedAgentPlatformAgentSpawnApprovePayload extends ManagedAgentPlatformOwnerPayload {
@@ -99,6 +119,20 @@ export interface ManagedAgentPlatformAgentSpawnApprovePayload extends ManagedAge
 
 export interface ManagedAgentPlatformAgentSpawnSuggestionActionInput {
   suggestionId: string;
+  organizationId?: string;
+  departmentRole?: string;
+  displayName?: string;
+  mission?: string;
+  rationale?: string;
+  supportingAgentId?: string;
+  supportingAgentDisplayName?: string;
+  suggestedSupervisorAgentId?: string;
+  openWorkItemCount?: number;
+  waitingWorkItemCount?: number;
+  highPriorityWorkItemCount?: number;
+  spawnPolicy?: unknown;
+  guardrail?: unknown;
+  auditFacts?: unknown;
   note?: string;
 }
 
@@ -108,6 +142,7 @@ export interface ManagedAgentPlatformAgentSpawnSuggestionActionPayload extends M
 
 export interface ManagedAgentPlatformAgentSpawnSuggestionRestoreInput {
   suggestionId: string;
+  organizationId?: string;
 }
 
 export interface ManagedAgentPlatformAgentSpawnSuggestionRestorePayload extends ManagedAgentPlatformOwnerPayload {
@@ -116,7 +151,9 @@ export interface ManagedAgentPlatformAgentSpawnSuggestionRestorePayload extends 
 
 export interface ManagedAgentPlatformAgentIdleApproveInput {
   suggestionId: string;
-  action?: ManagedAgentIdleRecoveryAction;
+  organizationId?: string;
+  agentId: string;
+  action: ManagedAgentIdleRecoveryAction;
 }
 
 export interface ManagedAgentPlatformAgentIdleApprovePayload extends ManagedAgentPlatformOwnerPayload {
@@ -125,6 +162,7 @@ export interface ManagedAgentPlatformAgentIdleApprovePayload extends ManagedAgen
 
 export interface ManagedAgentPlatformAgentLifecycleInput {
   agentId: string;
+  action?: "pause" | "resume" | "archive";
 }
 
 export interface ManagedAgentPlatformAgentLifecyclePayload
@@ -133,8 +171,8 @@ export interface ManagedAgentPlatformAgentLifecyclePayload
 export interface ManagedAgentPlatformGovernanceFiltersInput {
   organizationId?: string;
   managerAgentId?: string;
-  attentionLevels?: string[];
-  waitingFor?: "human" | "agent";
+  attentionLevels?: ManagedAgentAttentionLevel[] | null;
+  waitingFor?: "any" | "human" | "agent";
   staleOnly?: boolean;
   failedOnly?: boolean;
   attentionOnly?: boolean;

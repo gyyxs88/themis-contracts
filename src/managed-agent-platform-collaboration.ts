@@ -17,6 +17,7 @@ export interface ManagedAgentPlatformRunDetailInput {
 }
 
 export interface ManagedAgentPlatformRunListInput {
+  agentId?: string;
   nodeId?: string;
   workItemId?: string;
   status?: ManagedAgentPlatformRunRecord["status"];

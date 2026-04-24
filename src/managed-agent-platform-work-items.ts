@@ -14,11 +14,19 @@ export interface ManagedAgentPlatformWorkItemListInput {
 
 export interface ManagedAgentPlatformWorkItemDispatchInput {
   targetAgentId: string;
-  sourceType: ManagedAgentPlatformWorkItemRecord["sourceType"];
+  sourceType?: ManagedAgentPlatformWorkItemRecord["sourceType"];
+  sourcePrincipalId?: string;
+  sourceAgentId?: string;
+  parentWorkItemId?: string;
   dispatchReason?: string;
   goal: string;
+  contextPacket?: unknown;
   priority?: ManagedAgentPlatformWorkItemRecord["priority"];
-  projectId?: string | null;
+  projectId?: string;
+  workspacePolicySnapshot?: unknown;
+  runtimeProfileSnapshot?: unknown;
+  scheduledAt?: string;
+  [key: string]: unknown;
 }
 
 export interface ManagedAgentPlatformWorkItemDetailInput {

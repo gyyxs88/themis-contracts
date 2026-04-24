@@ -3,6 +3,7 @@ export type PlatformServiceRole = "gateway" | "worker";
 export type ManagedAgentNodeStatus = "online" | "offline" | "draining";
 export type ManagedAgentPriority = "low" | "normal" | "high" | "urgent";
 export type ManagedAgentWaitingFor = "human" | "agent";
+export type ManagedAgentAttentionLevel = "normal" | "attention" | "urgent";
 export type ManagedAgentWorkItemStatus =
   | "queued"
   | "planning"
@@ -11,10 +12,18 @@ export type ManagedAgentWorkItemStatus =
   | "waiting_human"
   | "waiting_agent"
   | "waiting_action"
+  | "blocked"
+  | "handoff_pending"
   | "completed"
   | "failed"
   | "cancelled";
-export type ManagedAgentLifecycleStatus = "active" | "paused" | "archived";
+export type ManagedAgentLifecycleStatus =
+  | "provisioning"
+  | "bootstrapping"
+  | "active"
+  | "paused"
+  | "degraded"
+  | "archived";
 export type ManagedAgentMailboxStatus = "pending" | "leased" | "acked" | "responded" | "closed";
 export type ManagedAgentReasoningLevel = "minimal" | "low" | "medium" | "high" | "xhigh";
 export type ManagedAgentRunStatus =
@@ -35,8 +44,12 @@ export type ManagedAgentWorkerRunStatus =
   | "waiting_agent"
   | "failed"
   | "cancelled";
-export type ProjectWorkspaceContinuityMode = "sticky" | "replicated";
-export type ManagedAgentIdleRecoveryAction = "pause";
+export type ProjectWorkspaceContinuityMode = "sticky" | "replicated" | "portable";
+export type ManagedAgentIdleRecoveryAction = "pause" | "archive";
+export type ManagedAgentPlatformCompletionDetailLevel =
+  | "metadata_only"
+  | "deliverable_only"
+  | "full_execution_snapshot";
 
 export interface TimestampedRecord {
   createdAt: string;
@@ -86,46 +99,91 @@ export interface ManagedAgentPlatformAgentRecord extends TimestampedRecord {
   agentId: string;
   organizationId: string;
   principalId?: string;
+  createdByPrincipalId?: string;
+  supervisorPrincipalId?: string;
   displayName: string;
+  slug?: string;
   departmentRole: string;
   mission?: string;
   status: ManagedAgentLifecycleStatus;
   supervisorAgentId?: string | null;
+  autonomyLevel?: "supervised" | "bounded" | "autonomous";
+  creationMode?: "manual" | "auto";
+  exposurePolicy?: "gateway_only" | "admin_takeover_only" | "direct_human_exception";
+  defaultWorkspacePolicyId?: string;
+  defaultRuntimeProfileId?: string;
+  bootstrapProfile?: unknown;
+  bootstrappedAt?: string;
   agentCard?: ManagedAgentPlatformAgentCardRecord;
 }
 
 export interface ManagedAgentPlatformWorkspacePolicyRecord extends TimestampedRecord {
   agentId: string;
+  policyId?: string;
+  organizationId?: string;
+  ownerAgentId?: string;
+  displayName?: string;
+  workspacePath?: string;
+  additionalDirectories?: string[];
+  allowNetworkAccess?: boolean;
   canonicalWorkspacePath?: string | null;
   additionalWorkspacePaths?: string[];
 }
 
 export interface ManagedAgentPlatformRuntimeProfileRecord extends TimestampedRecord {
   agentId: string;
+  profileId?: string;
+  organizationId?: string;
+  ownerAgentId?: string;
+  displayName?: string;
   provider?: string | null;
   model?: string | null;
   reasoning?: ManagedAgentReasoningLevel | null;
+  memoryMode?: string | null;
+  sandboxMode?: string | null;
+  webSearchMode?: string | null;
+  networkAccessEnabled?: boolean | null;
+  approvalPolicy?: string | null;
+  accessMode?: string | null;
+  authAccountId?: string | null;
+  thirdPartyProviderId?: string | null;
 }
 
 export interface ManagedAgentPlatformAuthAccountRecord extends TimestampedRecord {
   authAccountId: string;
+  accountId?: string;
   agentId: string;
   label: string;
+  codexHome?: string;
+  isActive?: boolean;
 }
 
 export interface ManagedAgentPlatformThirdPartyProviderRecord extends TimestampedRecord {
   providerId: string;
+  id?: string;
   agentId: string;
   provider: string;
+  type?: string;
+  name?: string;
   label: string;
+  baseUrl?: string;
+  model?: string;
+  isEnabled?: boolean;
+  apiKeyConfigured?: boolean;
+  source?: string;
 }
 
 export interface ManagedAgentPlatformProjectWorkspaceBindingRecord extends TimestampedRecord {
   projectId: string;
   organizationId: string;
   displayName?: string;
+  owningAgentId?: string;
+  workspaceRootId?: string;
+  workspacePolicyId?: string;
   canonicalWorkspacePath?: string | null;
   preferredNodeId?: string | null;
+  preferredNodePool?: string;
+  lastActiveNodeId?: string;
   lastActiveWorkspacePath?: string | null;
   continuityMode: ProjectWorkspaceContinuityMode;
 }
@@ -138,6 +196,8 @@ export interface ManagedAgentPlatformExecutionLeaseRecord extends TimestampedRec
   leaseToken?: string;
   targetAgentId?: string;
   status?: ManagedAgentExecutionLeaseStatus;
+  leaseExpiresAt?: string;
+  lastHeartbeatAt?: string;
 }
 
 export interface ManagedAgentPlatformNodeLeaseSummary {
@@ -188,6 +248,8 @@ export interface ManagedAgentPlatformNodeLeaseRecoverySummary {
   activeLeaseCount: number;
   reclaimedRunCount: number;
   requeuedWorkItemCount: number;
+  preservedWaitingCount?: number;
+  revokedLeaseOnlyCount?: number;
 }
 
 export type ManagedAgentPlatformNodeLeaseRecoveryAction = "reclaim" | "offline" | "drain";
@@ -211,20 +273,40 @@ export interface ManagedAgentPlatformWorkItemRecord extends TimestampedRecord {
   organizationId: string;
   targetAgentId: string;
   sourceType: "human" | "agent" | "system";
+  sourcePrincipalId?: string;
+  sourceAgentId?: string;
+  parentWorkItemId?: string;
   dispatchReason?: string;
   goal: string;
+  contextPacket?: unknown;
+  waitingActionRequest?: unknown;
+  latestHumanResponse?: unknown;
   status: ManagedAgentWorkItemStatus;
   priority: ManagedAgentPriority;
   projectId?: string | null;
   waitingFor?: ManagedAgentWaitingFor | null;
+  workspacePolicySnapshot?: unknown;
+  runtimeProfileSnapshot?: unknown;
+  scheduledAt?: string;
+  startedAt?: string;
+  completedAt?: string;
 }
 
 export interface ManagedAgentPlatformRunRecord extends TimestampedRecord {
   runId: string;
   organizationId: string;
   workItemId: string;
+  targetAgentId?: string;
+  schedulerId?: string;
+  leaseToken?: string;
+  leaseExpiresAt?: string;
   nodeId?: string | null;
   status: ManagedAgentRunStatus;
+  startedAt?: string;
+  lastHeartbeatAt?: string;
+  completedAt?: string;
+  failureCode?: string;
+  failureMessage?: string;
 }
 
 export interface ManagedAgentPlatformMessageRecord extends TimestampedRecord {
@@ -335,9 +417,11 @@ export interface ManagedAgentPlatformWorkerWaitingActionPayload {
 export interface ManagedAgentPlatformWorkerCompletionPayload {
   summary: string;
   output?: unknown;
-  touchedFiles?: string[];
+  touchedFiles?: string[] | undefined;
   structuredOutput?: Record<string, unknown> | null;
   completedAt?: string;
+  detailLevel?: ManagedAgentPlatformCompletionDetailLevel;
+  interpretationHint?: string;
 }
 
 export interface ManagedAgentPlatformWorkerRunMutationResult {
@@ -377,6 +461,26 @@ export interface ManagedAgentPlatformWorkItemDetailView {
   organization: ManagedAgentPlatformOrganizationRecord;
   workItem: ManagedAgentPlatformWorkItemRecord;
   targetAgent: ManagedAgentPlatformAgentRecord;
+  sourceAgent?: ManagedAgentPlatformAgentRecord | null;
+  sourcePrincipal?: ManagedAgentPlatformPrincipalRecord | null;
+  messages?: ManagedAgentPlatformMessageRecord[];
+  collaboration?: {
+    parentWorkItem: ManagedAgentPlatformWorkItemRecord | null;
+    parentTargetAgent: ManagedAgentPlatformAgentRecord | null;
+    childSummary: {
+      totalCount: number;
+      openCount: number;
+      waitingCount: number;
+      completedCount: number;
+      failedCount: number;
+      cancelledCount: number;
+    };
+    childWorkItems: Array<{
+      workItem: ManagedAgentPlatformWorkItemRecord;
+      targetAgent: ManagedAgentPlatformAgentRecord | null;
+      latestHandoff: ManagedAgentPlatformHandoffRecord | null;
+    }>;
+  };
   runs?: ManagedAgentPlatformRunRecord[];
   parentWorkItem?: ManagedAgentPlatformWorkItemRecord | null;
   childWorkItems?: ManagedAgentPlatformWorkItemRecord[];
@@ -409,10 +513,16 @@ export interface ManagedAgentPlatformEscalateWaitingAgentWorkItemToHumanResult {
 }
 
 export interface ManagedAgentPlatformWaitingQueueSummary {
-  total: number;
-  waitingHuman: number;
-  waitingAgent: number;
-  attentionCount: number;
+  totalCount?: number;
+  waitingHumanCount?: number;
+  waitingAgentCount?: number;
+  escalationCount?: number;
+  urgentCount?: number;
+  normalCount?: number;
+  total?: number;
+  waitingHuman?: number;
+  waitingAgent?: number;
+  attentionCount?: number;
 }
 
 export interface ManagedAgentPlatformWaitingQueueResult {
@@ -421,16 +531,59 @@ export interface ManagedAgentPlatformWaitingQueueResult {
 }
 
 export interface ManagedAgentPlatformGovernanceOverview {
-  summary: ManagedAgentPlatformWaitingQueueSummary;
+  urgentParentCount?: number;
+  attentionParentCount?: number;
+  waitingHumanCount?: number;
+  waitingAgentCount?: number;
+  staleParentCount?: number;
+  failedChildCount?: number;
+  managersNeedingAttentionCount?: number;
   managerHotspots?: Array<{
-    managerAgentId: string;
+    managerAgent?: ManagedAgentPlatformAgentRecord;
+    managerAgentId?: string;
     displayName?: string;
-    itemCount: number;
+    itemCount?: number;
+    openParentCount?: number;
+    urgentParentCount?: number;
+    attentionParentCount?: number;
+    waitingCount?: number;
+    staleParentCount?: number;
+    failedChildCount?: number;
+    latestActivityAt?: string;
   }>;
+  summary?: ManagedAgentPlatformWaitingQueueSummary;
 }
 
 export interface ManagedAgentPlatformCollaborationDashboardResult {
   summary: ManagedAgentPlatformWaitingQueueSummary;
+  items?: Array<{
+    parentWorkItem: ManagedAgentPlatformWorkItemRecord;
+    managerAgent: ManagedAgentPlatformAgentRecord;
+    childSummary: {
+      totalCount: number;
+      openCount: number;
+      waitingCount: number;
+      completedCount: number;
+      failedCount: number;
+      cancelledCount: number;
+    };
+    waitingHumanChildCount: number;
+    waitingAgentChildCount: number;
+    failedChildCount: number;
+    staleChildCount: number;
+    managerStatus: ManagedAgentLifecycleStatus;
+    latestHandoff: ManagedAgentPlatformHandoffRecord | null;
+    latestWaitingMessage: ManagedAgentPlatformMessageRecord | null;
+    latestWaitingWorkItemId?: string;
+    latestWaitingTargetAgentId?: string;
+    latestWaitingActionType?: string;
+    latestGovernanceResponse: Record<string, unknown> | null;
+    lastActivityAt: string;
+    lastActivityKind: "handoff" | "waiting" | "governance" | "work_item";
+    lastActivitySummary: string;
+    attentionLevel: ManagedAgentAttentionLevel;
+    attentionReasons: string[];
+  }>;
   parents: Array<{
     parentWorkItemId: string;
     displayName?: string;
@@ -440,13 +593,30 @@ export interface ManagedAgentPlatformCollaborationDashboardResult {
 
 export interface ManagedAgentPlatformSpawnSuggestionRecord extends TimestampedRecord {
   suggestionId: string;
+  organizationId?: string;
   departmentRole: string;
+  displayName?: string;
+  slug?: string;
+  mission?: string;
   reason: string;
+  rationale?: string;
   mode?: "auto" | "manual";
+  supportingAgentId?: string;
+  supportingAgentDisplayName?: string;
+  suggestedSupervisorAgentId?: string;
+  openWorkItemCount?: number;
+  waitingWorkItemCount?: number;
+  highPriorityWorkItemCount?: number;
+  spawnPolicy?: unknown;
+  guardrail?: unknown;
+  auditFacts?: unknown;
 }
 
 export interface ManagedAgentPlatformSpawnSuggestionsView {
   suggestions: ManagedAgentPlatformSpawnSuggestionRecord[];
+  spawnPolicies?: ManagedAgentPlatformSpawnPolicyRecord[];
+  suppressedSuggestions?: ManagedAgentPlatformSpawnSuggestionAuditRecord[];
+  recentAuditLogs?: ManagedAgentPlatformSpawnSuggestionAuditRecord[];
   policy?: ManagedAgentPlatformSpawnPolicyRecord | null;
   suppressed?: ManagedAgentPlatformSpawnSuggestionAuditRecord[];
 }
@@ -460,11 +630,15 @@ export interface ManagedAgentPlatformIdleRecoverySuggestionRecord extends Timest
 
 export interface ManagedAgentPlatformIdleRecoverySuggestionsView {
   suggestions: ManagedAgentPlatformIdleRecoverySuggestionRecord[];
+  recentAuditLogs?: ManagedAgentPlatformSpawnSuggestionAuditRecord[];
 }
 
 export interface ManagedAgentPlatformSpawnPolicyRecord extends TimestampedRecord {
   ownerPrincipalId: string;
   enabled: boolean;
+  organizationId?: string;
+  maxActiveAgents?: number;
+  maxActiveAgentsPerRole?: number;
   maxAgentsPerRole?: number | null;
 }
 

@@ -10,6 +10,15 @@ import type {
 } from "./managed-agent-platform-shared.js";
 import type { ManagedAgentPlatformOwnerPayload } from "./managed-agent-platform-worker.js";
 
+export type {
+  ManagedAgentPlatformMeetingArtifactRefRecord,
+  ManagedAgentPlatformMeetingMessageRecord,
+  ManagedAgentPlatformMeetingParticipantRecord,
+  ManagedAgentPlatformMeetingResolutionRecord,
+  ManagedAgentPlatformMeetingRoomRecord,
+  ManagedAgentPlatformMeetingRoundRecord,
+} from "./managed-agent-platform-shared.js";
+
 export const MANAGED_AGENT_MEETING_ROOM_STATUSES = ["open", "closing", "closed", "terminated"] as const;
 export const MANAGED_AGENT_MEETING_ROUND_STATUSES = ["queued", "running", "completed", "failed"] as const;
 

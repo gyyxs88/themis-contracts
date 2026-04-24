@@ -13,12 +13,17 @@ export interface ManagedAgentPlatformProjectWorkspaceBindingDetailInput {
 
 export interface ManagedAgentPlatformProjectWorkspaceBindingUpsertInput {
   projectId: string;
-  organizationId: string;
-  displayName?: string;
-  canonicalWorkspacePath?: string | null;
-  preferredNodeId?: string | null;
-  lastActiveWorkspacePath?: string | null;
-  continuityMode: SharedProjectWorkspaceBindingRecord["continuityMode"];
+  organizationId?: string;
+  displayName: string;
+  owningAgentId?: string;
+  workspaceRootId?: string;
+  workspacePolicyId?: string;
+  canonicalWorkspacePath?: string;
+  preferredNodeId?: string;
+  preferredNodePool?: string;
+  lastActiveNodeId?: string;
+  lastActiveWorkspacePath?: string;
+  continuityMode?: SharedProjectWorkspaceBindingRecord["continuityMode"];
 }
 
 export interface ManagedAgentPlatformProjectWorkspaceBindingListPayload
