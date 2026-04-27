@@ -57,6 +57,12 @@ export interface TimestampedRecord {
   [key: string]: unknown;
 }
 
+export interface ManagedAgentPlatformSecretEnvRef {
+  envName: string;
+  secretRef: string;
+  required?: boolean;
+}
+
 export interface ManagedAgentPlatformOrganizationRecord extends TimestampedRecord {
   organizationId: string;
   ownerPrincipalId: string;
@@ -147,6 +153,7 @@ export interface ManagedAgentPlatformRuntimeProfileRecord extends TimestampedRec
   accessMode?: string | null;
   authAccountId?: string | null;
   thirdPartyProviderId?: string | null;
+  secretEnvRefs?: ManagedAgentPlatformSecretEnvRef[];
 }
 
 export interface ManagedAgentPlatformAuthAccountRecord extends TimestampedRecord {
@@ -449,6 +456,7 @@ export interface ManagedAgentPlatformWorkerAssignedRun {
     sandboxMode?: string | null;
     approvalPolicy?: string | null;
     networkAccessEnabled?: boolean | null;
+    secretEnvRefs?: ManagedAgentPlatformSecretEnvRef[];
     [key: string]: unknown;
   };
 }

@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import type { ManagedAgentPlatformAgentDetailResult } from "./managed-agent-platform-agents.js";
+import type {
+  ManagedAgentPlatformAgentDetailResult,
+  ManagedAgentPlatformAgentExecutionBoundaryUpdateInput,
+} from "./managed-agent-platform-agents.js";
+import type { ManagedAgentPlatformWorkerAssignedRunResult } from "./managed-agent-platform-worker.js";
 
 test("agent 契约会固定 detail 里的 employee dossier shape", () => {
   const detail: ManagedAgentPlatformAgentDetailResult = {
@@ -65,4 +69,33 @@ test("agent 契约会固定 detail 里的 employee dossier shape", () => {
   assert.equal(detail.agent.agentCard?.responsibilitySummary, "负责平台 API 治理。");
   assert.deepEqual(detail.agent.agentCard?.allowedScopes, ["平台控制面"]);
   assert.equal(detail.runtimeProfile.reasoning, "high");
+});
+
+test("agent runtime 契约只表达 secret 引用，不表达 secret 明文", () => {
+  const boundaryInput: ManagedAgentPlatformAgentExecutionBoundaryUpdateInput = {
+    agentId: "agent-a",
+    runtimeProfile: {
+      model: "gpt-5.5",
+      secretEnvRefs: [{
+        envName: "CLOUDFLARE_API_TOKEN",
+        secretRef: "cloudflare-readonly-token",
+        required: true,
+      }],
+    },
+  };
+  const assignedRun = {
+    executionContract: {
+      secretEnvRefs: boundaryInput.runtimeProfile?.secretEnvRefs,
+    },
+  } as ManagedAgentPlatformWorkerAssignedRunResult;
+
+  assert.deepEqual(assignedRun.executionContract.secretEnvRefs, [{
+    envName: "CLOUDFLARE_API_TOKEN",
+    secretRef: "cloudflare-readonly-token",
+    required: true,
+  }]);
+  assert.equal(
+    Object.prototype.hasOwnProperty.call(assignedRun.executionContract.secretEnvRefs?.[0] ?? {}, "value"),
+    false,
+  );
 });

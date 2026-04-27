@@ -10,6 +10,7 @@ import type {
   ManagedAgentPlatformGovernanceOverview,
   ManagedAgentPlatformIdleRecoverySuggestionsView,
   ManagedAgentPlatformOwnerView,
+  ManagedAgentPlatformSecretEnvRef,
   ManagedAgentReasoningLevel,
   ManagedAgentPlatformSpawnPolicyRecord,
   ManagedAgentPlatformSpawnSuggestionDecisionResult,
@@ -60,6 +61,7 @@ export interface ManagedAgentPlatformAgentExecutionBoundaryUpdateInput {
     accessMode?: string;
     authAccountId?: string;
     thirdPartyProviderId?: string;
+    secretEnvRefs?: ManagedAgentPlatformSecretEnvRef[];
   };
 }
 
