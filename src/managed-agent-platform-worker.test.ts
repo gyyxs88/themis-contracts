@@ -4,6 +4,9 @@ import type {
   ManagedAgentPlatformWorkerNodeDetailResult,
   ManagedAgentPlatformWorkerNodeLeaseRecoveryResult,
   ManagedAgentPlatformWorkerRunMutationResult,
+  ManagedAgentPlatformWorkerSecretAckPayload,
+  ManagedAgentPlatformWorkerSecretPullResult,
+  ManagedAgentPlatformWorkerSecretPushResult,
 } from "./managed-agent-platform-worker.js";
 
 test("worker 契约会固定 node detail 的 lease summary 与 execution lease 视图 shape", () => {
@@ -212,4 +215,33 @@ test("worker 契约会固定 run update / complete 的 mutation result shape", (
   assert.equal(result.run.status, "completed");
   assert.equal(result.workItem.status, "completed");
   assert.equal(result.executionLease.status, "released");
+});
+
+test("worker 契约会固定 secret delivery push/pull/ack shape 且 push 结果不含 value", () => {
+  const pushResult: ManagedAgentPlatformWorkerSecretPushResult = {
+    delivery: {
+      deliveryId: "worker-secret-delivery-1",
+      nodeId: "node-a",
+      secretRef: "cloudflare-readonly-token",
+      status: "pending",
+      createdAt: "2026-04-27T10:00:00.000Z",
+      updatedAt: "2026-04-27T10:00:00.000Z",
+    },
+  };
+  const pullResult: ManagedAgentPlatformWorkerSecretPullResult = {
+    deliveries: [{
+      ...pushResult.delivery,
+      value: "worker-token-value",
+    }],
+  };
+  const ackPayload: ManagedAgentPlatformWorkerSecretAckPayload = {
+    ownerPrincipalId: "principal-owner",
+    nodeId: "node-a",
+    deliveryIds: ["worker-secret-delivery-1"],
+    secretRefs: ["cloudflare-readonly-token"],
+  };
+
+  assert.equal(Object.prototype.hasOwnProperty.call(pushResult.delivery, "value"), false);
+  assert.equal(pullResult.deliveries[0]?.value, "worker-token-value");
+  assert.deepEqual(ackPayload.secretRefs, ["cloudflare-readonly-token"]);
 });

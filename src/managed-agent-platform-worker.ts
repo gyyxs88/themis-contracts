@@ -33,6 +33,7 @@ export interface ManagedAgentPlatformWorkerNodeRegistrationInput {
   workspaceCapabilities?: string[];
   credentialCapabilities?: string[];
   providerCapabilities?: string[];
+  secretCapabilities?: string[];
   heartbeatTtlSeconds?: number;
 }
 
@@ -44,6 +45,7 @@ export interface ManagedAgentPlatformWorkerNodeHeartbeatInput {
   workspaceCapabilities?: string[];
   credentialCapabilities?: string[];
   providerCapabilities?: string[];
+  secretCapabilities?: string[];
   heartbeatTtlSeconds?: number;
 }
 
@@ -62,6 +64,39 @@ export interface ManagedAgentPlatformWorkerNodeLeaseReclaimInput extends Managed
 
 export interface ManagedAgentPlatformWorkerPullInput {
   nodeId: string;
+}
+
+export type ManagedAgentPlatformWorkerSecretDeliveryStatus = "pending" | "delivered";
+
+export interface ManagedAgentPlatformWorkerSecretDeliveryRecord {
+  deliveryId: string;
+  nodeId: string;
+  secretRef: string;
+  status: ManagedAgentPlatformWorkerSecretDeliveryStatus;
+  createdAt: string;
+  updatedAt: string;
+  deliveredAt?: string;
+}
+
+export interface ManagedAgentPlatformWorkerSecretDeliveryValueRecord
+  extends ManagedAgentPlatformWorkerSecretDeliveryRecord {
+  value: string;
+}
+
+export interface ManagedAgentPlatformWorkerSecretPushInput {
+  nodeId: string;
+  secretRef: string;
+  value: string;
+}
+
+export interface ManagedAgentPlatformWorkerSecretPullInput {
+  nodeId: string;
+}
+
+export interface ManagedAgentPlatformWorkerSecretAckInput {
+  nodeId: string;
+  deliveryIds: string[];
+  secretRefs?: string[];
 }
 
 export type ManagedAgentPlatformWorkerWaitingActionPayload = SharedWorkerWaitingActionPayload;
@@ -102,6 +137,29 @@ export interface ManagedAgentPlatformNodeReclaimPayload
 
 export interface ManagedAgentPlatformWorkerPullPayload
   extends ManagedAgentPlatformOwnerPayload, ManagedAgentPlatformWorkerPullInput {}
+
+export interface ManagedAgentPlatformWorkerSecretPushPayload extends ManagedAgentPlatformOwnerPayload {
+  delivery: ManagedAgentPlatformWorkerSecretPushInput;
+}
+
+export interface ManagedAgentPlatformWorkerSecretPullPayload
+  extends ManagedAgentPlatformOwnerPayload, ManagedAgentPlatformWorkerSecretPullInput {}
+
+export interface ManagedAgentPlatformWorkerSecretAckPayload
+  extends ManagedAgentPlatformOwnerPayload, ManagedAgentPlatformWorkerSecretAckInput {}
+
+export interface ManagedAgentPlatformWorkerSecretPushResult {
+  delivery: ManagedAgentPlatformWorkerSecretDeliveryRecord;
+}
+
+export interface ManagedAgentPlatformWorkerSecretPullResult {
+  deliveries: ManagedAgentPlatformWorkerSecretDeliveryValueRecord[];
+}
+
+export interface ManagedAgentPlatformWorkerSecretAckResult {
+  deliveries: ManagedAgentPlatformWorkerSecretDeliveryRecord[];
+  secretRefs: string[];
+}
 
 export interface ManagedAgentPlatformWorkerRunStatusPayload
   extends ManagedAgentPlatformOwnerPayload, ManagedAgentPlatformWorkerRunStatusInput {}

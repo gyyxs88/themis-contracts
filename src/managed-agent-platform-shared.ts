@@ -227,6 +227,7 @@ export interface ManagedAgentPlatformNodeRecord extends TimestampedRecord {
   workspaceCapabilities?: string[];
   credentialCapabilities?: string[];
   providerCapabilities?: string[];
+  secretCapabilities?: string[];
   heartbeatTtlSeconds?: number;
   lastHeartbeatAt?: string | null;
 }
